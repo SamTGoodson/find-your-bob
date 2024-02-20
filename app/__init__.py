@@ -61,7 +61,7 @@ def get_closest_album():
     closest_album, album_image_url = find_closest_album(user_df, bob_album, feature_columns)
 
     html_content = render_template_string('''
-        <h2>{{ album_name }}</h2>
+        <h3>{{ album_name }}</h3>
         <img src="{{ album_image_url }}" alt="Album Cover" style="width:200px;height:auto;">
     ''', album_name=closest_album, album_image_url=album_image_url)
 
