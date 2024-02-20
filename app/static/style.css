@@ -12,25 +12,25 @@ body, html {
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally in the container */
-    justify-content: center; /* Center items vertically in the container */
-    height: 90vh; /* Make the container fill the height of the viewport */
-    text-align: center; /* Center the text of all child elements */
+    align-items: center; 
+    justify-content: center; 
+    height: 90vh; 
+    text-align: center; 
 }
 
 button {
-    margin: 10px 0; /* Add some vertical spacing between buttons and text */
-    /* Add any additional styling for your buttons here */
+    margin: 10px 0; 
+    
 }
 
 h2, p {
-    margin: 10px 0; /* Ensure consistent spacing around headings and paragraphs */
-    /* Additional styling for your headings and paragraphs */
+    margin: 10px 0; 
+    
 }
 title {
-    font-size: 2rem; /* Adjust the font size as needed */
-    margin: 1em 0; /* Add some space above and below the title */
-    text-align: center; /* Center the title */
+    font-size: 2rem; 
+    margin: 1em 0; 
+    text-align: center; 
 }
 
 h1 {
@@ -48,22 +48,22 @@ h3 {
 }
 
 p {
-    font-size: 1rem; /* Adjust the font size as needed */
-    line-height: 1.5; /* Adjust line height for readability */
-    text-align: justify; /* Justify text for a clean look, or use 'left' for standard alignment */
-    margin: 1em 0; /* Add some space above and below paragraphs */
+    font-size: 1rem; 
+    line-height: 1.5; 
+    text-align: justify; 
+    margin: 1em 0; 
 }
 
 @media (max-width: 768px) {
     h2 {
-        font-size: 1.5rem; /* Smaller heading font size on small devices */
+        font-size: 1.5rem; 
     }
     p {
-        font-size: 0.9rem; /* Smaller paragraph font size on small devices */
+        font-size: 0.9rem; 
     }
     .container {
-        padding: 20px; /* Add some padding on smaller screens */
-        height: auto; /* Let the container grow with content */
-        min-height: 100vh; /* Ensure it's at least as tall as the viewport */
+        padding: 20px; 
+        height: auto; 
+        min-height: 100vh; 
     }
 }

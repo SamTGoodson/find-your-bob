@@ -11,15 +11,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 csv_file_path = os.path.join(current_dir, 'data', 'bob_with_images.csv')
 bob_features_path = os.path.join(current_dir, 'data', 'bob_features.csv')
 
-print("Current directory:", current_dir)
-print("CSV file path:", csv_file_path)
-print("Bob features path:", bob_features_path)
-
-
-secret_key = os.urandom(16)
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  
+app.secret_key = os.environ.get('APP_KEY')
 
 
 SPOTIPY_CLIENT_ID = 'your_spotify_client_id'
@@ -56,7 +50,6 @@ def get_closest_album():
     
     if studio_only:
         bob_album = album_features[album_features['album_name'].isin(album_titles)]
-        print("Using studio albums only dataset")
     else:
         bob_album = album_features
         print("Using full dataset")
@@ -76,10 +69,8 @@ def get_closest_album():
 
 @app.route('/make_playlist', methods=['POST'])
 def make_playlist():
-    print("Make playlist route hit.")
-    print("Request method:", request.method)
     if 'token_info' not in session:
-        print("Token info not in session.")
+        return redirect(url_for('login'))
     
     token_info = session['token_info']
     sp = Spotify(auth=token_info['access_token'])
@@ -88,10 +79,9 @@ def make_playlist():
     user_df = process_dataframe(user_raw,manual_catagorical_cols)
     bob_raw = pd.read_csv(bob_features_path)
     recommended_songs_df = get_recommended_songs(bob_raw,user_df) 
-    print(recommended_songs_df.head())
     create_and_fill_playlist(recommended_songs_df, user) 
 
-    return f"""<p>Your playlist has been created!</p>
+    return f"""<p>Your playlist was successfully created, enjoy your very own slice of Bob.</p>
     <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/President_Barack_Obama_presents_American_musician_Bob_Dylan_with_a_Medal_of_Freedom.jpg" style="height: 300px; width: 300px; display: block; margin-left: auto; margin-right: auto" alt="Playlist Image">"""
 
 
