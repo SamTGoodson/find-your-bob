@@ -13,6 +13,7 @@ bob_features_path = os.path.join(current_dir, 'data', 'bob_features.csv')
 
 
 app = Flask(__name__)
+server = app.server
 app.secret_key = os.environ.get('APP_KEY')
 
 
