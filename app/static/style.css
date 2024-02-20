@@ -6,19 +6,21 @@ body, html {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    font-family: 'Georgia', serif; 
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     justify-content: flex-start;
     text-align: center;
-    width: 90%; 
-    max-width: 1200px; 
-    margin-top: 20px; 
-    min-height: 90vh; 
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 20px;
+    min-height: 90vh;
 }
+
 
 button {
     margin: 10px 0;
