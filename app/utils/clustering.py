@@ -26,20 +26,19 @@ def process_dataframe(df, manual_categorical_cols):
     
     processed_data = {}
     df = df.drop(columns=['id'])
-    
+
     for col in df.columns:
         if col in manual_categorical_cols:
-            processed_data[col + '_mode'] = df[col].mode()[0]
+            processed_data[col] = df[col].mode()[0]
         else:
-            processed_data[col + '_mean'] = df[col].mean()
+            processed_data[col] = df[col].mean()
     
     return processed_data
 
 def process_dataframe_with_variance_weighting(df, manual_categorical_cols):
     processed_data = {}
     
-    if manual_categorical_cols is None:
-        manual_categorical_cols = []
+    df = df.drop(columns=['id'])
     
     variances = df.var()
     
@@ -47,10 +46,10 @@ def process_dataframe_with_variance_weighting(df, manual_categorical_cols):
     
     for col in df.columns:
         if col in manual_categorical_cols:
-            processed_data[col + '_mode'] = df[col].mode()[0]
+            processed_data[col] = df[col].mode()[0]
         else:
             weighted_column = df[col] * variance_weights[col]
-            processed_data[col + '_mean'] = weighted_column.mean()
+            processed_data[col] = weighted_column.mean()
     
     return processed_data
 
@@ -75,11 +74,16 @@ def find_closest_album(user_raw,album_features, feature_columns):
 
 
 def get_recommended_songs(songs,user_info):
+    print(songs.head(), user_info)
     X = songs.drop(columns=['id', 'track_name', 'album_name'])
+    feature_columns = X.columns.tolist()
+    print(feature_columns)
     knn = NearestNeighbors(n_neighbors=30)
     knn.fit(X)
     user_profile = np.array([user_info[feature] for feature in feature_columns]).reshape(1, -1)
+    print(user_profile)
     distances, indices = knn.kneighbors(user_profile)
+    print(distances, indices)
     recommended_songs_df = songs.iloc[indices[0]][['track_name', 'id']]
     return recommended_songs_df
 

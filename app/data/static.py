@@ -41,7 +41,7 @@ album_titles = ['Title',
  'Rough and Rowdy Ways',
  'Shadow Kingdom']
 
-feature_columns = [
+album_feature_columns = [
     'danceability_mean',
     'energy_mean',
     'key_mode',
