@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for,render_template_string
-from .utils.clustering import create_and_fill_playlist, find_closest_album, get_recommended_songs, process_dataframe,process_dataframe_with_variance_weighting
+from .utils.clustering import create_and_fill_playlist, find_closest_album, get_recommended_songs, process_dataframe,process_dataframe_with_variance_weighting,test_generate_recommendations
 from .utils.api_calls import safe_spotify_request, get_top_features
 import pandas as pd
 from .spotify_client import SpotifyClient
@@ -80,7 +80,7 @@ def make_playlist():
     user_df = process_dataframe_with_variance_weighting(user_raw,manual_catagorical_cols)
     print(user_df)
     bob_raw = pd.read_csv(bob_features_path)
-    recommended_songs_df = get_recommended_songs(bob_raw,user_df) 
+    recommended_songs_df = test_generate_recommendations(bob_raw,user_df) 
     print(recommended_songs_df.head())
     create_and_fill_playlist(recommended_songs_df, user) 
 

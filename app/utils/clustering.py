@@ -12,6 +12,7 @@ from spotipy.exceptions import SpotifyException
 from scipy.spatial import distance
 
 from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import StandardScaler
 
 
 scope = "user-library-read user-top-read playlist-modify-public"
@@ -71,6 +72,29 @@ def find_closest_album(user_raw,album_features, feature_columns):
                 image_url = images[0]['url'] 
 
     return closest_album,image_url
+
+def test_generate_recommendations(songs, user_data, n_recommendations=30):
+
+    songs_df = songs.drop(columns=['id', 'track_name', 'album_name'])
+    
+    augmented_features = songs_df.copy()
+    for feature, value in user_data.items():
+        augmented_features[feature + "_user_avg"] = value
+
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(augmented_features)
+    
+    knn = NearestNeighbors(n_neighbors=n_recommendations)
+    knn.fit(scaled_features)
+
+    augmented_user_profile = np.array([user_data.get(feature, 0) for feature in augmented_features.columns])
+    scaled_user_profile = scaler.transform([augmented_user_profile])
+
+    distances, indices = knn.kneighbors(scaled_user_profile)
+
+    recommended_songs_df = songs.iloc[indices[0]][['track_name', 'id']]
+
+    return recommended_songs_df
 
 
 def get_recommended_songs(songs,user_info):
