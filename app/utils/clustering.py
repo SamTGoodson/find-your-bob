@@ -22,22 +22,35 @@ feature_columns = ['danceability_mean', 'energy_mean', 'loudness_mean','speechin
                     'acousticness_mean', 'instrumentalness_mean','liveness_mean', 'valence_mean',
                       'tempo_mean', 'mode_mode', 'key_mode','time_signature_mode'] 
 
-def process_dataframe(df, manual_categorical_cols=None, unique_value_threshold=10):
-    processed_data = {}
+def process_dataframe(df, manual_categorical_cols):
     
+    processed_data = {}
     df = df.drop(columns=['id'])
+    
+    for col in df.columns:
+        if col in manual_categorical_cols:
+            processed_data[col + '_mode'] = df[col].mode()[0]
+        else:
+            processed_data[col + '_mean'] = df[col].mean()
+    
+    return processed_data
+
+def process_dataframe_with_variance_weighting(df, manual_categorical_cols):
+    processed_data = {}
     
     if manual_categorical_cols is None:
         manual_categorical_cols = []
     
+    variances = df.var()
+    
+    variance_weights = variances / variances.sum()
+    
     for col in df.columns:
-        if df[col].nunique() <= unique_value_threshold or col in manual_categorical_cols:
-
+        if col in manual_categorical_cols:
             processed_data[col + '_mode'] = df[col].mode()[0]
         else:
-
-            processed_data[col + '_mean'] = df[col].mean()
-    
+            weighted_column = df[col] * variance_weights[col]
+            processed_data[col + '_mean'] = weighted_column.mean()
     
     return processed_data
 

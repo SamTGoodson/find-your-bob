@@ -77,6 +77,7 @@ def make_playlist():
     user = sp.current_user()
     user_raw = get_top_features(sp)
     user_df = process_dataframe(user_raw,manual_catagorical_cols)
+    print(user_df)
     bob_raw = pd.read_csv(bob_features_path)
     recommended_songs_df = get_recommended_songs(bob_raw,user_df) 
     create_and_fill_playlist(recommended_songs_df, user) 
