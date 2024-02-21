@@ -30,8 +30,27 @@ def safe_spotify_request(call, *args, **kwargs):
     raise Exception("Maximum retry attempts reached.")
 
 
-def get_top_features(sp):
-    top = sp.current_user_top_tracks()
+def get_top_features_tracks(sp):
+    top = sp.current_user_top_tracks(limit=50, time_range='medium_term')
+    top_df = pd.DataFrame(top['items'])
+    
+    features_list = []
+    
+    for id in top_df['id']:
+        features = safe_spotify_request(sp.audio_features, id)
+        
+        if features[0]: 
+            features_df = pd.DataFrame(features)
+            features_list.append(features_df)
+    
+
+    features_df = pd.concat(features_list, ignore_index=True)
+    features_df = features_df.drop(columns=['type', 'uri', 'track_href', 'analysis_url', 'duration_ms'])
+
+    return features_df
+
+def get_top_features_albums(sp):
+    top = sp.current_user_top_tracks(limit=30, time_range='medium_term')
     top_df = pd.DataFrame(top['items'])
     
     features_list = []

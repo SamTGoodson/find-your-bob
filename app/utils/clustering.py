@@ -10,7 +10,8 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.exceptions import SpotifyException
 
 from scipy.spatial import distance
-
+from fuzzywuzzy import process
+from sklearn.decomposition import PCA
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -22,6 +23,51 @@ manual_catagorical_cols = ['mode', 'key', 'time_signature']
 feature_columns = ['danceability_mean', 'energy_mean', 'loudness_mean','speechiness_mean',
                     'acousticness_mean', 'instrumentalness_mean','liveness_mean', 'valence_mean',
                       'tempo_mean', 'mode_mode', 'key_mode','time_signature_mode'] 
+
+def remove_similar_songs(df, threshold=90):
+    unique_titles = []
+    unique_indices = []
+
+    for i, row in df.iterrows():
+        title = row['track_name']
+        if not unique_titles:
+            unique_titles.append(title)
+            unique_indices.append(i)
+            continue
+
+        highest_similarity = process.extractOne(title, unique_titles)[1]  
+        if highest_similarity < threshold:
+            unique_titles.append(title)
+            unique_indices.append(i)
+
+    return df.loc[unique_indices]
+
+def recommend_with_pca(bob,user):
+    songs_df = bob.drop(columns=['id', 'track_name', 'album_name'])
+    combined_df = pd.concat([songs_df, user])
+    feature_columns = songs_df.columns.tolist()
+
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(combined_df[feature_columns])
+
+    pca = PCA(n_components=0.95)
+    pca_features = pca.fit_transform(scaled_features)
+
+    num_songs = len(bob)
+    songs_transformed = pca_features[:num_songs]
+    user_favorites_transformed = pca_features[num_songs:]
+
+    user_profile = np.mean(user_favorites_transformed, axis=0).reshape(1, -1)
+
+    knn = NearestNeighbors(n_neighbors=33)
+    knn.fit(songs_transformed)
+
+    distances, indices = knn.kneighbors(user_profile)
+    recommended_songs_df = bob.iloc[indices[0]][['track_name', 'id']]
+    unique_songs_df = remove_similar_songs(recommended_songs_df, threshold=90)
+
+    return unique_songs_df
+    
 
 def process_dataframe(df, manual_categorical_cols):
     

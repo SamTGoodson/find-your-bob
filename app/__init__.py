@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for,render_template_string
-from .utils.clustering import create_and_fill_playlist, find_closest_album, get_recommended_songs, process_dataframe,process_dataframe_with_variance_weighting,test_generate_recommendations
-from .utils.api_calls import safe_spotify_request, get_top_features
+from .utils.clustering import create_and_fill_playlist, find_closest_album, process_dataframe,process_dataframe_with_variance_weighting,recommend_with_pca
+from .utils.api_calls import get_top_features_albums, get_top_features_tracks
 import pandas as pd
 from .spotify_client import SpotifyClient
 from .data.static import manual_catagorical_cols,album_titles,album_feature_columns
@@ -56,7 +56,7 @@ def get_closest_album():
     
     token_info = session['token_info']
     sp = Spotify(auth=token_info['access_token'])
-    user_raw = get_top_features(sp)
+    user_raw = get_top_features_albums(sp)
     user_df = process_dataframe(user_raw,manual_catagorical_cols) 
     closest_album, album_image_url = find_closest_album(user_df, bob_album, album_feature_columns)
 
@@ -76,11 +76,9 @@ def make_playlist():
     sp = Spotify(auth=token_info['access_token'])
     user = sp.current_user()
     print(user)
-    user_raw = get_top_features(sp)
-    user_df = process_dataframe_with_variance_weighting(user_raw,manual_catagorical_cols)
-    print(user_df)
+    user_raw = get_top_features_tracks(sp)
     bob_raw = pd.read_csv(bob_features_path)
-    recommended_songs_df = test_generate_recommendations(bob_raw,user_df) 
+    recommended_songs_df = recommend_with_pca(bob_raw,user_raw) 
     print(recommended_songs_df.head())
     create_and_fill_playlist(recommended_songs_df, user) 
 
