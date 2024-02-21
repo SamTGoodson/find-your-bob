@@ -29,9 +29,9 @@ def process_dataframe(df, manual_categorical_cols):
 
     for col in df.columns:
         if col in manual_categorical_cols:
-            processed_data[col] = df[col].mode()[0]
+            processed_data[col + '_mode'] = df[col].mode()[0]
         else:
-            processed_data[col] = df[col].mean()
+            processed_data[col + '_mean'] = df[col].mean()
     
     return processed_data
 
