@@ -70,7 +70,8 @@ def get_closest_album():
         <h3>{{ album_name }}</h3>
         <img src="{{ album_image_url }}" alt="Album Cover" style="width:200px;height:auto;">
         <p><a href="{{ album_url }}" target="_blank">Listen on Spotify</a></p>
-    ''', album_name=closest_album, album_image_url=album_image_url, album_url=album_url)
+        <img src="{{ spotify_logo_url }}" alt="Spotify Logo" style="width:100px;height:auto;">
+    ''', album_name=closest_album, album_image_url=album_image_url, album_url=album_url,spotify_logo_url=url_for('static', filename='images/spotify_logo.png'))
 
     return html_content
 
@@ -89,9 +90,12 @@ def make_playlist():
     print(recommended_songs_df.head())
     create_and_fill_playlist(recommended_songs_df, user) 
 
-    return f"""<p>Your playlist was successfully created, enjoy your very own slice of Bob.</p>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/President_Barack_Obama_presents_American_musician_Bob_Dylan_with_a_Medal_of_Freedom.jpg" style="height: 300px; width: 300px; display: block; margin-left: auto; margin-right: auto" alt="Playlist Image">"""
-
+    html_content =  render_template_string("""
+    <p>Your playlist was successfully created, enjoy your very own slice of Bob.</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/President_Barack_Obama_presents_American_musician_Bob_Dylan_with_a_Medal_of_Freedom.jpg" style="height: 300px; width: 300px; display: block; margin-left: auto; margin-right: auto;padding: 20px" alt="Playlist Image">
+    <img src="{{ spotify_logo_url }}" alt="Spotify Logo" style="width:100px;height:auto;padding:20px">
+     """,spotify_logo_url=url_for('static', filename='images/spotify_logo.png'))
+    return html_content
 
 if __name__ == '__main__':
     app.run(debug=True)
