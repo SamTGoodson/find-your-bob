@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, url_for,render_template_string
-from .utils.clustering import create_and_fill_playlist, find_closest_album, process_dataframe,recommend_with_pca
+from .utils.clustering import create_and_fill_playlist, find_closest_album_url, process_dataframe,recommend_with_pca
 from .utils.api_calls import get_top_features_albums, get_top_features_tracks
 import pandas as pd
 from .spotify_client import SpotifyClient
@@ -8,7 +8,7 @@ import os
 from spotipy import Spotify
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-csv_file_path = os.path.join(current_dir, 'data', 'bob_with_images.csv')
+csv_file_path = os.path.join(current_dir, 'data', 'bob_with_images_urls.csv')
 bob_features_path = os.path.join(current_dir, 'data', 'bob_features.csv')
 
 
@@ -64,12 +64,13 @@ def get_closest_album():
     sp = Spotify(auth=token_info['access_token'])
     user_raw = get_top_features_albums(sp)
     user_df = process_dataframe(user_raw,manual_catagorical_cols) 
-    closest_album, album_image_url = find_closest_album(user_df, bob_album, album_feature_columns)
+    closest_album, album_image_url,album_url = find_closest_album_url(user_df, bob_album, album_feature_columns)
 
     html_content = render_template_string('''
         <h3>{{ album_name }}</h3>
         <img src="{{ album_image_url }}" alt="Album Cover" style="width:200px;height:auto;">
-    ''', album_name=closest_album, album_image_url=album_image_url)
+        <p><a href="{{ album_url }}" target="_blank">Listen on Spotify</a></p>
+    ''', album_name=closest_album, album_image_url=album_image_url, album_url=album_url)
 
     return html_content
 

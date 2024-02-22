@@ -192,3 +192,23 @@ def process_bob(bob_df, cat_cols, con_cols):
     processed_data = processed_data.reset_index()
     
     return processed_data
+
+def find_closest_album_url(user_raw,album_features, feature_columns):
+    max_similarity = -1  
+    closest_album = None
+
+    averages_features = [user_raw[col] for col in feature_columns]
+    user_features = np.array(averages_features).flatten()
+
+    for index, row in album_features.iterrows():
+        album_features = row[feature_columns].tolist()  
+        similarity = 1 - distance.cosine(user_features, album_features)  
+        if similarity > max_similarity:
+            max_similarity = similarity
+            closest_album = row['album_name']
+            images = ast.literal_eval(row['images']) 
+            url = row['url']
+            if images:  
+                image_url = images[0]['url'] 
+
+    return closest_album,image_url,url
