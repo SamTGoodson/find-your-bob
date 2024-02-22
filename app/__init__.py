@@ -1,5 +1,5 @@
-from flask import Flask, render_template, jsonify, request, redirect, session, url_for,render_template_string
-from .utils.clustering import create_and_fill_playlist, find_closest_album, process_dataframe,process_dataframe_with_variance_weighting,recommend_with_pca
+from flask import Flask, render_template, request, redirect, session, url_for,render_template_string
+from .utils.clustering import create_and_fill_playlist, find_closest_album, process_dataframe,recommend_with_pca
 from .utils.api_calls import get_top_features_albums, get_top_features_tracks
 import pandas as pd
 from .spotify_client import SpotifyClient
@@ -39,10 +39,16 @@ def callback():
 
     return redirect(url_for('index'))
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    
+    return redirect(url_for('index'))
+
 @app.route('/find_closest_album', methods=['GET', 'POST'])
 def get_closest_album():
-    if 'token_info' not in session:
-        return redirect(url_for('login'))
+    if not session.get('token_info'):
+        return render_template_string('<p>Please login.</p>')
     
     album_features = pd.read_csv(csv_file_path)
     data = request.get_json()  
@@ -69,8 +75,8 @@ def get_closest_album():
 
 @app.route('/make_playlist', methods=['POST'])
 def make_playlist():
-    if 'token_info' not in session:
-        return redirect(url_for('login'))
+    if not session.get('token_info'):
+        return render_template_string('<p>Please login.</p>')
     
     token_info = session['token_info']
     sp = Spotify(auth=token_info['access_token'])
